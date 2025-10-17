@@ -22,34 +22,47 @@ Para instalar `CliEnDecrypter` en tu sistema, sigue estos pasos:
 
 ## Uso
 
-La herramienta funciona con dos comandos principales: `encrypt` y `decrypt`.
+La herramienta funciona con tres comandos principales: `genkey`, `encrypt` y `decrypt`.
+
+### Generar una Clave (para Cifrado por Sustitución)
+
+Antes de usar el cifrado por sustitución, necesitas generar un archivo de clave:
+
+```sh
+encrypter genkey substitution
+```
+
+Esto creará un archivo `subst.key` en tu directorio actual.
 
 ### Encriptar un archivo
 
 ```sh
-encrypter encrypt <ruta_del_archivo> --shift <numero_de_desplazamiento>
+encrypter encrypt <ruta_del_archivo> --cipher <tipo_de_cifrado> [opciones]
 ```
 
-- `<ruta_del_archivo>`: El archivo de texto que quieres encriptar.
-- `<numero_de_desplazamiento>`: La clave para el cifrado César (un número entero).
+- `--cipher caesar`: Usa el Cifrado César. Requiere la opción `--shift`.
+- `--cipher substitution`: Usa el Cifrado por Sustitución. Requiere un archivo `subst.key`.
 
-**Ejemplo:**
+**Ejemplos:**
 ```sh
-encrypter encrypt mi_secreto.txt --shift 3
+# Cifrado César
+encrypter encrypt mi_secreto.txt --cipher caesar --shift 3
+
+# Cifrado por Sustitución
+encrypter encrypt mi_secreto.txt --cipher substitution
 ```
-Esto creará un archivo llamado `mi_secreto.txt.cesar`.
 
 ### Desencriptar un archivo
 
 ```sh
-encrypter decrypt <ruta_del_archivo_encriptado> --shift <numero_de_desplazamiento>
+encrypter decrypt <ruta_del_archivo> --cipher <tipo_de_cifrado> [opciones]
 ```
 
-- `<ruta_del_archivo_encriptado>`: El archivo `.cesar` que quieres desencriptar.
-- `<numero_de_desplazamiento>`: La misma clave que usaste para encriptar.
-
-**Ejemplo:**
+**Ejemplos:**
 ```sh
-encrypter decrypt mi_secreto.txt.cesar --shift 3
+# Cifrado César
+encrypter decrypt mi_secreto.txt.caesar --cipher caesar --shift 3
+
+# Cifrado por Sustitución
+encrypter decrypt mi_secreto.txt.substitution --cipher substitution
 ```
-Esto restaurará el archivo original `mi_secreto.txt`.

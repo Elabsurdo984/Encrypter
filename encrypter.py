@@ -1,94 +1,127 @@
 import argparse
 import os
+import random
 
-# --- Lógica del Cifrado César ---
+# --- Lógica de Cifrado César ---
 
 def cifrado_cesar(texto, desplazamiento, modo):
-    """
-    Cifra o descifra el texto usando el Cifrado César.
-    modo: 'encrypt' o 'decrypt'
-    """
+    """Cifra o descifra el texto usando el Cifrado César."""
     alfabeto = 'abcdefghijklmnopqrstuvwxyz'
     resultado = ''
-
     if modo == 'decrypt':
         desplazamiento = -desplazamiento
-
     for caracter in texto:
         if caracter.lower() in alfabeto:
-            # Encontrar la posición del caracter en el alfabeto
             idx = alfabeto.find(caracter.lower())
-            # Calcular la nueva posición con el desplazamiento
             nuevo_idx = (idx + desplazamiento) % len(alfabeto)
-            
-            # Añadir el nuevo caracter al resultado, conservando mayúsculas/minúsculas
             if caracter.isupper():
                 resultado += alfabeto[nuevo_idx].upper()
             else:
                 resultado += alfabeto[nuevo_idx]
         else:
-            # Si el caracter no está en el alfabeto, se mantiene igual
             resultado += caracter
-            
     return resultado
 
-# --- Lógica de archivos ---
+# --- Lógica de Cifrado por Sustitución ---
 
-def procesar_archivo(filepath, desplazamiento, modo):
-    """Lee un archivo, lo cifra/descifra y guarda el resultado."""
+def generar_clave_sustitucion():
+    """Genera una clave de sustitución (alfabeto desordenado) y la guarda."""
+    alfabeto = list('abcdefghijklmnopqrstuvwxyz')
+    random.shuffle(alfabeto)
+    clave = "".join(alfabeto)
+    with open("subst.key", "w", encoding='utf-8') as key_file:
+        key_file.write(clave)
+    print("¡Clave de sustitución generada y guardada en 'subst.key'!")
+
+def cargar_clave_sustitucion():
+    """Carga la clave de sustitución desde el archivo."""
+    with open("subst.key", "r", encoding='utf-8') as key_file:
+        return key_file.read()
+
+def cifrado_sustitucion(texto, clave, modo):
+    """Cifra o descifra el texto usando una clave de sustitución."""
+    alfabeto_plano = 'abcdefghijklmnopqrstuvwxyz'
+    
+    # str.maketrans es una forma muy eficiente de crear tablas de traducción
+    if modo == 'encrypt':
+        mapa = str.maketrans(alfabeto_plano + alfabeto_plano.upper(), clave + clave.upper())
+    else: # decrypt
+        mapa = str.maketrans(clave + clave.upper(), alfabeto_plano + alfabeto_plano.upper())
+        
+    return texto.translate(mapa)
+
+# --- Lógica del CLI ---
+
+def main():
+    parser = argparse.ArgumentParser(description="CLI para encriptar y desencriptar archivos con varios cifrados.")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # --- Comando 'genkey' ---
+    genkey_parser = subparsers.add_parser("genkey", help="Genera una nueva clave de encriptación.")
+    genkey_parser.add_argument("ciphertype", type=str, choices=['substitution'], help="Tipo de clave a generar (solo 'substitution' disponible).")
+
+    # --- Comando 'encrypt' ---
+    encrypt_parser = subparsers.add_parser("encrypt", help="Encripta un archivo.")
+    encrypt_parser.add_argument("filepath", type=str, help="Ruta del archivo a encriptar.")
+    encrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution'], help="El cifrado a utilizar.")
+    encrypt_parser.add_argument("-s", "--shift", type=int, help="El desplazamiento para el Cifrado César.")
+
+    # --- Comando 'decrypt' ---
+    decrypt_parser = subparsers.add_parser("decrypt", help="Desencripta un archivo.")
+    decrypt_parser.add_argument("filepath", type=str, help="Ruta del archivo a desencriptar.")
+    decrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution'], help="El cifrado a utilizar.")
+    decrypt_parser.add_argument("-s", "--shift", type=int, help="El desplazamiento para el Cifrado César.")
+
+    args = parser.parse_args()
+
+    # --- Lógica de ejecución ---
+    
+    if args.command == "genkey":
+        if args.ciphertype == 'substitution':
+            generar_clave_sustitucion()
+        return
+
+    # Leer archivo de entrada
     try:
-        with open(filepath, 'r', encoding='utf-8') as file:
+        with open(args.filepath, 'r', encoding='utf-8') as file:
             contenido = file.read()
     except FileNotFoundError:
-        print(f"Error: El archivo '{filepath}' no fue encontrado.")
+        print(f"Error: El archivo '{args.filepath}' no fue encontrado.")
         return
     except Exception as e:
         print(f"Error al leer el archivo: {e}")
         return
 
-    contenido_procesado = cifrado_cesar(contenido, desplazamiento, modo)
+    # Procesar según el cifrado
+    contenido_procesado = ""
+    if args.cipher == 'caesar':
+        if args.shift is None:
+            print("Error: El cifrado César requiere el argumento --shift.")
+            return
+        contenido_procesado = cifrado_cesar(contenido, args.shift, args.command)
+    
+    elif args.cipher == 'substitution':
+        try:
+            clave = cargar_clave_sustitucion()
+            contenido_procesado = cifrado_sustitucion(contenido, clave, args.command)
+        except FileNotFoundError:
+            print("Error: No se encuentra 'subst.key'. Genera una clave con 'encrypter genkey substitution'.")
+            return
 
-    # Definir el nombre del archivo de salida
-    if modo == 'encrypt':
-        output_path = filepath + ".cesar"
+    # Escribir archivo de salida
+    if args.command == 'encrypt':
+        output_path = args.filepath + f".{args.cipher}"
     else: # decrypt
-        if filepath.endswith(".cesar"):
-             output_path = filepath.replace(".cesar", "")
+        if args.filepath.endswith(f".{args.cipher}"):
+             output_path = args.filepath.replace(f".{args.cipher}", "")
         else:
-             # Si el archivo no termina en .cesar, añade .dec para evitar sobreescribir
-             output_path = os.path.splitext(filepath)[0] + ".dec"
+             output_path = os.path.splitext(args.filepath)[0] + ".dec"
 
     with open(output_path, 'w', encoding='utf-8') as file:
         file.write(contenido_procesado)
-    
-    if modo == 'encrypt':
-        print(f"Archivo encriptado y guardado como '{output_path}'")
-    else:
-        print(f"Archivo desencriptado y guardado como '{output_path}'")
 
+    print(f"Archivo procesado con '{args.cipher}'. Resultado guardado en '{output_path}'")
 
-# --- Lógica del CLI ---
-
-def main():
-    parser = argparse.ArgumentParser(description="CLI para encriptar y desencriptar archivos con Cifrado César.")
-    subparsers = parser.add_subparsers(dest="command", required=True, help="Comandos disponibles")
-
-    # Comando para encriptar
-    encrypt_parser = subparsers.add_parser("encrypt", help="Encripta un archivo usando Cifrado César.")
-    encrypt_parser.add_argument("filepath", type=str, help="Ruta del archivo a encriptar.")
-    encrypt_parser.add_argument("-s", "--shift", type=int, required=True, help="El número de posiciones a desplazar.")
-
-    # Comando para desencriptar
-    decrypt_parser = subparsers.add_parser("decrypt", help="Desencripta un archivo usando Cifrado César.")
-    decrypt_parser.add_argument("filepath", type=str, help="Ruta del archivo a desencriptar.")
-    decrypt_parser.add_argument("-s", "--shift", type=int, required=True, help="El número de posiciones a desplazar (la misma clave que al encriptar).")
-
-    args = parser.parse_args()
-
-    if args.command == "encrypt":
-        procesar_archivo(args.filepath, args.shift, 'encrypt')
-    elif args.command == "decrypt":
-        procesar_archivo(args.filepath, args.shift, 'decrypt')
 
 if __name__ == "__main__":
     main()
