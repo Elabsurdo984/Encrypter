@@ -1,0 +1,15 @@
+# Changelog
+
+Todos los cambios notables en este proyecto serán documentados en este archivo.
+
+El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+## [1.0.0] - 2025-10-17
+
+### Added
+
+- Lanzamiento inicial de CliEnDecrypter.
+- Implementación de Cifrado César para encriptar y desencriptar archivos.
+- Creación de un ejecutable (`.exe`) con PyInstaller.
+- Script de instalación `install.bat` para facilitar la instalación en Windows.
+- Documentación inicial (`README.md`) y `CHANGELOG.md`.
