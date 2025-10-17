@@ -1,0 +1,46 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Se activa con tags como v1.0, v1.1.0, etc.
+
+jobs:
+  build-release:
+    name: Build and Release
+    runs-on: windows-latest # Usamos Windows porque creamos un .exe y usamos un .bat
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x' # Usa la última versión de Python 3
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+
+      - name: Build executable
+        run: pyinstaller --onefile --name encrypter encrypter.py
+
+      - name: Prepare release assets
+        run: |
+          # Mover el .exe al directorio raíz para facilitar el empaquetado
+          Copy-Item -Path "dist/encrypter.exe" -Destination "."
+          # Crear el archivo .zip con el .exe y el script de instalación, incluyendo la versión en el nombre
+          Compress-Archive -Path "encrypter.exe", "install.bat" -DestinationPath "encrypter-windows-${{ github.ref_name }}.zip"
+        shell: pwsh # Usar PowerShell para los comandos de arriba
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          # Esta opción crea una descripción del release automáticamente a partir de los mensajes de commit.
+          generate_release_notes: true
+          # Sube el .zip que acabamos de crear
+          files: encrypter-windows-${{ github.ref_name }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token automático proporcionado por GitHub Actions
