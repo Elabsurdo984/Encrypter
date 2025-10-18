@@ -152,10 +152,10 @@ def main():
 
     # Escribir archivo de salida
     if args.command == 'encrypt':
-        output_path = args.filepath + f".{args.cipher}"
+        output_path = os.path.splitext(args.filepath)[0] + ".ic"
     else: # decrypt
-        if args.filepath.endswith(f".{args.cipher}"):
-             output_path = args.filepath.replace(f".{args.cipher}", "")
+        if args.filepath.endswith(".ic"):
+             output_path = args.filepath.replace(".ic", "")
         else:
              output_path = os.path.splitext(args.filepath)[0] + ".dec"
 

@@ -42,6 +42,8 @@ Esto creará un archivo `subst.key` en tu directorio actual.
 icryptian encrypt <ruta_del_archivo> --cipher <tipo_de_cifrado> [opciones]
 ```
 
+Al encriptar, el archivo de salida tendrá el mismo nombre que el original, pero con la extensión `.ic` (por ejemplo, `mi_secreto.txt` se convertirá en `mi_secreto.ic`).
+
 - `--cipher caesar`: Usa el Cifrado César. Requiere la opción `--shift`.
 - `--cipher substitution`: Usa el Cifrado por Sustitución. Requiere un archivo `subst.key`.
 - `--cipher transposition`: Usa el Cifrado por Transposición. Requiere la opción `--shift` (que actúa como clave).
@@ -64,14 +66,16 @@ icryptian encrypt mi_secreto.txt --cipher transposition --shift 8
 icryptian decrypt <ruta_del_archivo> --cipher <tipo_de_cifrado> [opciones]
 ```
 
+El archivo encriptado ahora tendrá la extensión `.ic`. Al desencriptarlo, se generará un archivo con el nombre original pero sin extensión.
+
 **Ejemplos:**
 ```sh
 # Cifrado César
-icryptian decrypt mi_secreto.txt.caesar --cipher caesar --shift 3
+icryptian decrypt mi_secreto.ic --cipher caesar --shift 3
 
 # Cifrado por Sustitución
-icryptian decrypt mi_secreto.txt.substitution --cipher substitution
+icryptian decrypt mi_secreto.ic --cipher substitution
 
 # Cifrado por Transposición
-icryptian decrypt mi_secreto.txt.transposition --cipher transposition --shift 8
+icryptian decrypt mi_secreto.ic --cipher transposition --shift 8
 ```

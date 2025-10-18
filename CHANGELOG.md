@@ -4,6 +4,13 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.4.0] - 2025-10-18
+
+### Changed
+- La extensión de los archivos encriptados ahora es `.ic`.
+- Al encriptar, se elimina la extensión original del archivo. Por ejemplo, `archivo.txt` se convierte en `archivo.ic`.
+- Al desencriptar, el archivo de salida no tiene extensión. Por ejemplo, `archivo.ic` se convierte en `archivo`.
+
 ## [1.3.0] - 2025-10-20
 
 ### Changed
