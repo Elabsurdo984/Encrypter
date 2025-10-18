@@ -2,8 +2,8 @@
 setlocal
 
 :: --- Configuración ---
-set "AppName=encrypter"
-set "ExecutableName=encrypter.exe"
+set "AppName=icryptian"
+set "ExecutableName=icryptian.exe"
 :: Usar AppData\Local para no requerir permisos de administrador
 set "InstallDir=%LOCALAPPDATA%\%AppName%"
 

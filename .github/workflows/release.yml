@@ -28,14 +28,14 @@ jobs:
           pip install pyinstaller
 
       - name: Build executable
-        run: pyinstaller --onefile --name encrypter encrypter.py
+        run: pyinstaller --onefile --name icryptian icryptian.py
 
       - name: Prepare release assets
         run: |
           # Mover el .exe al directorio raíz para facilitar el empaquetado
-          Copy-Item -Path "dist/encrypter.exe" -Destination "."
+          Copy-Item -Path "dist/icryptian.exe" -Destination "."
           # Crear el archivo .zip con el .exe y el script de instalación, incluyendo la versión en el nombre
-          Compress-Archive -Path "encrypter.exe", "install.bat" -DestinationPath "encrypter-windows-${{ github.ref_name }}.zip"
+          Compress-Archive -Path "icryptian.exe", "install.bat" -DestinationPath "icryptian-windows-${{ github.ref_name }}.zip"
         shell: pwsh # Usar PowerShell para los comandos de arriba
 
       - name: Create GitHub Release
@@ -44,6 +44,6 @@ jobs:
           # Esta opción crea una descripción del release automáticamente a partir de los mensajes de commit.
           generate_release_notes: true
           # Sube el .zip que acabamos de crear
-          files: encrypter-windows-${{ github.ref_name }}.zip
+          files: icryptian-windows-${{ github.ref_name }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token automático proporcionado por GitHub Actions
