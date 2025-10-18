@@ -1,6 +1,7 @@
 import argparse
 import os
 import random
+import math
 
 # --- Lógica de Cifrado César ---
 
@@ -50,6 +51,38 @@ def cifrado_sustitucion(texto, clave, modo):
         
     return texto.translate(mapa)
 
+# --- Lógica de Cifrado por Transposición ---
+
+def cifrar_transposicion(texto, clave):
+    """Cifra el texto usando el Cifrado por Transposición."""
+    columnas = [''] * clave
+    for col in range(clave):
+        puntero = col
+        while puntero < len(texto):
+            columnas[col] += texto[puntero]
+            puntero += clave
+    return ''.join(columnas)
+
+def descifrar_transposicion(texto_cifrado, clave):
+    """Descifra el texto usando el Cifrado por Transposición."""
+    num_columnas = int(math.ceil(len(texto_cifrado) / float(clave)))
+    num_filas = clave
+    num_cajas_sombreadas = (num_columnas * num_filas) - len(texto_cifrado)
+    
+    texto_plano = [''] * num_columnas
+    col = 0
+    fila = 0
+    
+    for simbolo in texto_cifrado:
+        texto_plano[col] += simbolo
+        col += 1
+        if (col == num_columnas) or (col == num_columnas - 1 and fila >= num_filas - num_cajas_sombreadas):
+            col = 0
+            fila += 1
+            
+    return ''.join(texto_plano)
+
+
 # --- Lógica del CLI ---
 
 def main():
@@ -63,14 +96,14 @@ def main():
     # --- Comando 'encrypt' ---
     encrypt_parser = subparsers.add_parser("encrypt", help="Encripta un archivo.")
     encrypt_parser.add_argument("filepath", type=str, help="Ruta del archivo a encriptar.")
-    encrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution'], help="El cifrado a utilizar.")
-    encrypt_parser.add_argument("-s", "--shift", type=int, help="El desplazamiento para el Cifrado César.")
+    encrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution', 'transposition'], help="El cifrado a utilizar.")
+    encrypt_parser.add_argument("-s", "--shift", type=int, help="El desplazamiento para César o la clave para Transposición.")
 
     # --- Comando 'decrypt' ---
     decrypt_parser = subparsers.add_parser("decrypt", help="Desencripta un archivo.")
     decrypt_parser.add_argument("filepath", type=str, help="Ruta del archivo a desencriptar.")
-    decrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution'], help="El cifrado a utilizar.")
-    decrypt_parser.add_argument("-s", "--shift", type=int, help="El desplazamiento para el Cifrado César.")
+    decrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution', 'transposition'], help="El cifrado a utilizar.")
+    decrypt_parser.add_argument("-s", "--shift", type=int, help="El desplazamiento para César o la clave para Transposición.")
 
     args = parser.parse_args()
 
@@ -107,6 +140,15 @@ def main():
         except FileNotFoundError:
             print("Error: No se encuentra 'subst.key'. Genera una clave con 'encrypter genkey substitution'.")
             return
+
+    elif args.cipher == 'transposition':
+        if args.shift is None:
+            print("Error: El cifrado por transposición requiere el argumento --shift (clave).")
+            return
+        if args.command == 'encrypt':
+            contenido_procesado = cifrar_transposicion(contenido, args.shift)
+        else: # decrypt
+            contenido_procesado = descifrar_transposicion(contenido, args.shift)
 
     # Escribir archivo de salida
     if args.command == 'encrypt':

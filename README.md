@@ -5,6 +5,8 @@ Una sencilla herramienta de línea de comandos (CLI) para encriptar y desencript
 ## Características
 
 - **Cifrado César**: Encripta y desencripta archivos de texto.
+- **Cifrado por Sustitución**: Utiliza un alfabeto desordenado como clave.
+- **Cifrado por Transposición**: Cambia la posición de los caracteres usando una clave numérica.
 - **Empaquetado**: Se distribuye como un único ejecutable de Windows (`.exe`).
 - **Instalador simple**: Incluye un script `install.bat` para una instalación automática en Windows (copia el archivo y lo añade al PATH).
 
@@ -42,6 +44,7 @@ encrypter encrypt <ruta_del_archivo> --cipher <tipo_de_cifrado> [opciones]
 
 - `--cipher caesar`: Usa el Cifrado César. Requiere la opción `--shift`.
 - `--cipher substitution`: Usa el Cifrado por Sustitución. Requiere un archivo `subst.key`.
+- `--cipher transposition`: Usa el Cifrado por Transposición. Requiere la opción `--shift` (que actúa como clave).
 
 **Ejemplos:**
 ```sh
@@ -50,6 +53,9 @@ encrypter encrypt mi_secreto.txt --cipher caesar --shift 3
 
 # Cifrado por Sustitución
 encrypter encrypt mi_secreto.txt --cipher substitution
+
+# Cifrado por Transposición
+encrypter encrypt mi_secreto.txt --cipher transposition --shift 8
 ```
 
 ### Desencriptar un archivo
@@ -65,4 +71,7 @@ encrypter decrypt mi_secreto.txt.caesar --cipher caesar --shift 3
 
 # Cifrado por Sustitución
 encrypter decrypt mi_secreto.txt.substitution --cipher substitution
+
+# Cifrado por Transposición
+encrypter decrypt mi_secreto.txt.transposition --cipher transposition --shift 8
 ```
