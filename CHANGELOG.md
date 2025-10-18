@@ -4,6 +4,13 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.5.0] - 2025-10-18
+
+### Changed
+- Se ha refactorizado la arquitectura del proyecto para una mayor escalabilidad y mantenibilidad.
+- El código fuente ahora reside en un directorio `src`.
+- La lógica de los cifrados se ha separado en su propio paquete `src/ciphers`.
+
 ## [1.4.0] - 2025-10-18
 
 ### Changed
