@@ -4,6 +4,12 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.6.0] - 2025-10-18
+
+### Added
+- Implementación de Cifrado Vigenère.
+- Nuevo argumento `--key` (o `-k`) para especificar la clave del cifrado Vigenère.
+
 ## [1.5.0] - 2025-10-18
 
 ### Changed

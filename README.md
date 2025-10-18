@@ -7,6 +7,7 @@ Una sencilla herramienta de línea de comandos (CLI) para encriptar y desencript
 - **Cifrado César**: Encripta y desencripta archivos de texto.
 - **Cifrado por Sustitución**: Utiliza un alfabeto desordenado como clave.
 - **Cifrado por Transposición**: Cambia la posición de los caracteres usando una clave numérica.
+- **Cifrado Vigenère**: Utiliza una clave de texto para mayor seguridad.
 - **Empaquetado**: Se distribuye como un único ejecutable de Windows (`.exe`).
 - **Instalador simple**: Incluye un script `install.bat` para una instalación automática en Windows (copia el archivo y lo añade al PATH).
 
@@ -47,6 +48,7 @@ Al encriptar, el archivo de salida tendrá el mismo nombre que el original, pero
 - `--cipher caesar`: Usa el Cifrado César. Requiere la opción `--shift`.
 - `--cipher substitution`: Usa el Cifrado por Sustitución. Requiere un archivo `subst.key`.
 - `--cipher transposition`: Usa el Cifrado por Transposición. Requiere la opción `--shift` (que actúa como clave).
+- `--cipher vigenere`: Usa el Cifrado Vigenère. Requiere la opción `--key`.
 
 **Ejemplos:**
 ```sh
@@ -58,6 +60,9 @@ icryptian encrypt mi_secreto.txt --cipher substitution
 
 # Cifrado por Transposición
 icryptian encrypt mi_secreto.txt --cipher transposition --shift 8
+
+# Cifrado Vigenère
+icryptian encrypt mi_secreto.txt --cipher vigenere --key "LEMON"
 ```
 
 ### Desencriptar un archivo
@@ -78,4 +83,7 @@ icryptian decrypt mi_secreto.ic --cipher substitution
 
 # Cifrado por Transposición
 icryptian decrypt mi_secreto.ic --cipher transposition --shift 8
+
+# Cifrado Vigenère
+icryptian decrypt mi_secreto.ic --cipher vigenere --key "LEMON"
 ```

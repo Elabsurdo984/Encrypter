@@ -8,6 +8,7 @@ from ciphers.sustitucion import (
     cifrado_sustitucion,
 )
 from ciphers.transposicion import cifrar_transposicion, descifrar_transposicion
+from ciphers.vigenere import cifrado_vigenere
 
 
 # --- Lógica del CLI ---
@@ -23,14 +24,16 @@ def main():
     # --- Comando 'encrypt' ---
     encrypt_parser = subparsers.add_parser("encrypt", help="Encripta un archivo.")
     encrypt_parser.add_argument("filepath", type=str, help="Ruta del archivo a encriptar.")
-    encrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution', 'transposition'], help="El cifrado a utilizar.")
+    encrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution', 'transposition', 'vigenere'], help="El cifrado a utilizar.")
     encrypt_parser.add_argument("-s", "--shift", type=int, help="El desplazamiento para César o la clave para Transposición.")
+    encrypt_parser.add_argument("-k", "--key", type=str, help="La clave para el cifrado Vigenère.")
 
     # --- Comando 'decrypt' ---
     decrypt_parser = subparsers.add_parser("decrypt", help="Desencripta un archivo.")
     decrypt_parser.add_argument("filepath", type=str, help="Ruta del archivo a desencriptar.")
-    decrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution', 'transposition'], help="El cifrado a utilizar.")
+    decrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution', 'transposition', 'vigenere'], help="El cifrado a utilizar.")
     decrypt_parser.add_argument("-s", "--shift", type=int, help="El desplazamiento para César o la clave para Transposición.")
+    decrypt_parser.add_argument("-k", "--key", type=str, help="La clave para el cifrado Vigenère.")
 
     args = parser.parse_args()
 
@@ -76,6 +79,12 @@ def main():
             contenido_procesado = cifrar_transposicion(contenido, args.shift)
         else: # decrypt
             contenido_procesado = descifrar_transposicion(contenido, args.shift)
+
+    elif args.cipher == 'vigenere':
+        if args.key is None:
+            print("Error: El cifrado Vigenère requiere el argumento --key.")
+            return
+        contenido_procesado = cifrado_vigenere(contenido, args.key, args.command)
 
     # Escribir archivo de salida
     if args.command == 'encrypt':
