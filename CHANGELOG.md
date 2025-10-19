@@ -4,6 +4,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.7.0] - 2025-10-19
+
+### Added
+- Implementación de Cifrado Binario.
+
+### Changed
+- El flujo de trabajo de release ahora sube el ejecutable directamente en lugar de un archivo .zip.
+
 ## [1.6.0] - 2025-10-18
 
 ### Added
