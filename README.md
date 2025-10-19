@@ -9,6 +9,7 @@ Una sencilla herramienta de línea de comandos (CLI) para encriptar y desencript
 - **Cifrado por Transposición**: Cambia la posición de los caracteres usando una clave numérica.
 - **Cifrado Vigenère**: Utiliza una clave de texto para mayor seguridad.
 - **Cifrado Binario**: Convierte el texto a su representación binaria.
+- **Cifrado Homofónico**: Oculta las frecuencias de las letras asignando múltiples sustitutos.
 - **Empaquetado**: Se distribuye como un único ejecutable de Windows (`.exe`).
 
 ## Instalación
@@ -45,12 +46,13 @@ $env:PATH += ";C:\ruta\a\la\carpeta"
 
 La herramienta funciona con tres comandos principales: `genkey`, `encrypt` y `decrypt`.
 
-### Generar una Clave (para Cifrado por Sustitución)
+### Generar una Clave (para Cifrado por Sustitución y Homofónico)
 
-Antes de usar el cifrado por sustitución, necesitas generar un archivo de clave:
+Antes de usar el cifrado por sustitución o homofónico, necesitas generar un archivo de clave:
 
 ```sh
 icryptian genkey substitution
+icryptian genkey homophonic
 ```
 
 Esto creará un archivo `subst.key` en tu directorio actual.
@@ -68,6 +70,7 @@ Al encriptar, el archivo de salida tendrá el mismo nombre que el original, pero
 - `--cipher transposition`: Usa el Cifrado por Transposición. Requiere la opción `--shift` (que actúa como clave).
 - `--cipher vigenere`: Usa el Cifrado Vigenère. Requiere la opción `--key`.
 - `--cipher binario`: Usa el Cifrado Binario. No requiere opciones adicionales.
+- `--cipher homophonic`: Usa el Cifrado Homofónico. Requiere un archivo `homofonico.key`.
 
 **Ejemplos:**
 ```sh
@@ -85,6 +88,9 @@ icryptian encrypt mi_secreto.txt --cipher vigenere --key "LEMON"
 
 # Cifrado Binario
 icryptian encrypt mi_secreto.txt --cipher binario
+
+# Cifrado Homofónico
+icryptian encrypt mi_secreto.txt --cipher homophonic
 ```
 
 ### Desencriptar un archivo
@@ -111,6 +117,9 @@ icryptian decrypt mi_secreto.ic --cipher vigenere --key "LEMON"
 
 # Cifrado Binario
 icryptian decrypt mi_secreto.ic --cipher binario
+
+# Cifrado Homofónico
+icryptian decrypt mi_secreto.ic --cipher homophonic
 ```
 
 ## Pruebas

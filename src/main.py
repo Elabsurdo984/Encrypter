@@ -10,6 +10,7 @@ from ciphers.sustitucion import (
 from ciphers.transposicion import cifrar_transposicion, descifrar_transposicion
 from ciphers.vigenere import cifrado_vigenere
 from ciphers.binario import encrypt as encrypt_binario, decrypt as decrypt_binario
+from ciphers.homofonico import generar_clave_homofonica, cargar_clave_homofonica, encrypt as encrypt_homofonico, decrypt as decrypt_homofonico
 
 
 # --- Lógica del CLI ---
@@ -20,19 +21,19 @@ def main():
 
     # --- Comando 'genkey' ---
     genkey_parser = subparsers.add_parser("genkey", help="Genera una nueva clave de encriptación.")
-    genkey_parser.add_argument("ciphertype", type=str, choices=['substitution'], help="Tipo de clave a generar (solo 'substitution' disponible).")
+    genkey_parser.add_argument("ciphertype", type=str, choices=['substitution', 'homophonic'], help="Tipo de clave a generar.")
 
     # --- Comando 'encrypt' ---
     encrypt_parser = subparsers.add_parser("encrypt", help="Encripta un archivo.")
     encrypt_parser.add_argument("filepath", type=str, help="Ruta del archivo a encriptar.")
-    encrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution', 'transposition', 'vigenere', 'binario'], help="El cifrado a utilizar.")
+    encrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution', 'transposition', 'vigenere', 'binario', 'homophonic'], help="El cifrado a utilizar.")
     encrypt_parser.add_argument("-s", "--shift", type=int, help="El desplazamiento para César o la clave para Transposición.")
     encrypt_parser.add_argument("-k", "--key", type=str, help="La clave para el cifrado Vigenère.")
 
     # --- Comando 'decrypt' ---
     decrypt_parser = subparsers.add_parser("decrypt", help="Desencripta un archivo.")
     decrypt_parser.add_argument("filepath", type=str, help="Ruta del archivo a desencriptar.")
-    decrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution', 'transposition', 'vigenere', 'binario'], help="El cifrado a utilizar.")
+    decrypt_parser.add_argument("-c", "--cipher", type=str, required=True, choices=['caesar', 'substitution', 'transposition', 'vigenere', 'binario', 'homophonic'], help="El cifrado a utilizar.")
     decrypt_parser.add_argument("-s", "--shift", type=int, help="El desplazamiento para César o la clave para Transposición.")
     decrypt_parser.add_argument("-k", "--key", type=str, help="La clave para el cifrado Vigenère.")
 
@@ -43,6 +44,8 @@ def main():
     if args.command == "genkey":
         if args.ciphertype == 'substitution':
             generar_clave_sustitucion()
+        elif args.ciphertype == 'homophonic':
+            generar_clave_homofonica()
         return
 
     # Leer archivo de entrada
@@ -92,6 +95,17 @@ def main():
             contenido_procesado = encrypt_binario(contenido)
         else: # decrypt
             contenido_procesado = decrypt_binario(contenido)
+
+    elif args.cipher == 'homophonic':
+        try:
+            clave = cargar_clave_homofonica()
+            if args.command == 'encrypt':
+                contenido_procesado = encrypt_homofonico(contenido, clave)
+            else: # decrypt
+                contenido_procesado = decrypt_homofonico(contenido, clave)
+        except FileNotFoundError:
+            print("Error: No se encuentra 'homofonico.key'. Genera una clave con 'icryptian genkey homophonic'.")
+            return
 
     # Escribir archivo de salida
     if args.command == 'encrypt':

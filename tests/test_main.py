@@ -14,11 +14,35 @@ class TestMain(unittest.TestCase):
             self.test_file,
             'tests/test_file.ic',
             'tests/test_file',
-            'subst.key'
+            'subst.key',
+            'homofonico.key'
         ]
         for f in files_to_remove:
             if os.path.exists(f):
                 os.remove(f)
+
+    def test_cli_homofonico(self):
+        # Generate key
+        command = ['python', 'src/main.py', 'genkey', 'homophonic']
+        result = self.run_command(command)
+        self.assertEqual(result.returncode, 0)
+        self.assertTrue(os.path.exists('homofonico.key'))
+
+        # Encrypt
+        command = ['python', 'src/main.py', 'encrypt', self.test_file, '-c', 'homophonic']
+        result = self.run_command(command)
+        self.assertEqual(result.returncode, 0)
+        self.assertTrue(os.path.exists('tests/test_file.ic'))
+
+        # Decrypt
+        command = ['python', 'src/main.py', 'decrypt', 'tests/test_file.ic', '-c', 'homophonic']
+        result = self.run_command(command)
+        self.assertEqual(result.returncode, 0)
+        self.assertTrue(os.path.exists('tests/test_file'))
+
+        with open('tests/test_file', 'r') as f:
+            content = f.read()
+        self.assertEqual(content, 'HOLAMUNDO')
 
     def run_command(self, command):
         result = subprocess.run(command, capture_output=True, text=True)
