@@ -112,3 +112,11 @@ icryptian decrypt mi_secreto.ic --cipher vigenere --key "LEMON"
 # Cifrado Binario
 icryptian decrypt mi_secreto.ic --cipher binario
 ```
+
+## Pruebas
+
+Para ejecutar la suite de tests, clona el repositorio y ejecuta el siguiente comando desde la raíz del proyecto:
+
+```sh
+python -m unittest discover tests
+```
